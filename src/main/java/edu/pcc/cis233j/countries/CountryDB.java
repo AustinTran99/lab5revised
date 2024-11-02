@@ -18,6 +18,7 @@ public class CountryDB {
 	private static final String USERNAME = "233jstudent";
 	private static final String PASSWORD = "tnedutsj332";
 	private static final String GET_COUNTRIES_SQL = "SELECT * FROM COUNTRY";
+	private static final String LANGUAGES_SQL = "SELECT language FROM LANGUAGE WHERE countryId = ?";
 
 	private List<Country> countries;
 
@@ -26,7 +27,8 @@ public class CountryDB {
 	 * Read from the Countries database and populate the countries list
 	 */
 	public CountryDB() {
-		countries = readCountries();
+		countries = readCountriesBasics();
+		readLanguages(countries);
 	}
 
 	/**
@@ -50,14 +52,16 @@ public class CountryDB {
 	 * If an error occurs, a stack trace is printed to standard error and an empty list is returned.
 	 * @return the list of countries read
 	 */
-	private List<Country> readCountries() {
+	private List<Country> readCountriesBasics() {
 		List<Country> countries = new ArrayList<>();
+		readLanguages(countries);
 		try (
 				Connection connection = getConnection();
 				PreparedStatement stmt = connection.prepareStatement(GET_COUNTRIES_SQL);
 				ResultSet rs = stmt.executeQuery()
 				) {
 			while (rs.next()) {
+
 				countries.add(new Country(rs.getInt("Id"),
 						rs.getString("Name"),
 						rs.getLong("Population"),
@@ -70,5 +74,27 @@ public class CountryDB {
 			e.printStackTrace();
 		}
 		return countries;
+	}
+
+	private void readLanguages(List<Country> countries)
+	{
+		try(
+				Connection conn = getConnection();
+				PreparedStatement stmt = conn.prepareStatement(LANGUAGES_SQL)
+				)
+		{
+			for(Country x : countries)
+			{
+				stmt.setInt(1, x.getId());
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next())
+				{
+					x.addEmailAddress(rs.getString("language"));
+				}
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

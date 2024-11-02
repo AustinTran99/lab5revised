@@ -1,5 +1,5 @@
 package edu.pcc.cis233j.countries;
-
+import java.util.List;
 /**
  * A country in the world
  * @author Cara Tang
@@ -10,7 +10,7 @@ public class Country {
 	private long population;
 	private double medianAge;
 	private long coastlineKm;
-	
+	private List<String> languages;
 	/**
 	 * Create a Country object with the given properties
 	 */
@@ -40,5 +40,15 @@ public class Country {
 
 	public long getCoastlineKm() {
 		return coastlineKm;
+	}
+
+	public void addEmailAddress(String email)
+	{
+		languages.add(email);
+	}
+
+	public List<String> getLanguages()
+	{
+		return languages;
 	}
 }
